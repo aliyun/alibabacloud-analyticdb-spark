@@ -11,8 +11,9 @@
 
     <artifactId>hudi-examples</artifactId>
     <packaging>pom</packaging>
-    <!--modules>
+    <modules>
         <module>hudi-dts</module>
-    </modules-->
+        <module>hudi-jdbc</module>
+    </modules>
 
 </project>
