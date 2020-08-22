@@ -7,14 +7,16 @@ import scala.collection.mutable
 case class Config(hbaseConfDir: Option[String] = None,
                   hadoopConfDir: Option[String] = None,
                   hiveConfDir: Option[String] = None,
+                  hostsFilePath: Option[String] = None,
                   targets: Seq[String] = Seq.empty[String],
                   mode: String = "",
-                  useHostsFile: Boolean = true)
+                  useHostsFile: Boolean = true,
+                  verbose: Boolean = false)
 
 object GetConfigCommandLine {
   val supportComponent = mutable.HashSet("hadoop", "hive", "hbase")
 
-  val parser = new scopt.OptionParser[Config]("TeraSort") {
+  val parser = new scopt.OptionParser[Config]("GetConfForServerlessSpark") {
     head("GetConfigCommandLine", "0.0.1-SNAPSHOT")
     note("GetSparkConf get hadoop")
     note("GetSparkConf get hadoop ")
@@ -33,12 +35,23 @@ object GetConfigCommandLine {
       .optional()
       .maxOccurs(1)
       .text("指定hive conf dir路径, 默认会从集群环境变量 HIVE_CONF_DIR 读取")
+    opt[String]("hosts-file-path")
+      .valueName("<path/to/hosts/file>")
+      .action((x, c) => c.copy(hostsFilePath = Some(x)))
+      .optional()
+      .hidden()
+      .maxOccurs(1)
+      .text("指定hostsfile的路径，用于本地测试，默认隐藏选项")
     opt[Boolean]("use-hosts-file")
       .hidden()
       .valueName("true|false")
       .action((x, c) => c.copy(useHostsFile = x))
       .optional()
       .text("true 使用本地/etc/hosts 解析域名， false 使用Java InetAddress 解析域名, 默认为true")
+    opt[Unit]("verbose")
+      .action((_, c) => c.copy(verbose = false))
+      .optional()
+      .text("指定--verbose输出更多调试信息")
     opt[String]("hbase-conf-dir")
       .valueName("<path/to/hbase/conf/dir>")
       .action((x, c) => c.copy(hiveConfDir = Some(x)))
@@ -67,7 +80,7 @@ object GetConfigCommandLine {
     checkConfig(c => {
       if (!c.mode.equals("get")) {
         showUsage
-        failure("应该使用 GetSparkConf 需要输入 `get` 命令 ")
+        failure("使用GetSparkConf 需要输入 `get` 命令 ")
       } else {
         success
       }
