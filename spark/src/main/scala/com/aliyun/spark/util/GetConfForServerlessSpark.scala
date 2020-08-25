@@ -1,11 +1,8 @@
 package com.aliyun.spark.util
 
-import scala.xml.{Elem, Node, XML}
 import java.net.InetAddress
 
-import java.util.NoSuchElementException
 import CommonUtils._
-import com.google.common.base.Preconditions
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.SparkSession
 object GetConfForServerlessSpark {
@@ -24,61 +21,60 @@ object GetConfForServerlessSpark {
 
     if (hiveConfDir == null) {
       throw new IllegalArgumentException(
-        "HIVE_CONF_DIR 未找到，使用--hive-conf-dir 指定 HIVE_CONF_DIR"
+        "HIVE_CONF_DIR not found, use --hive-conf-dir to specify HIVE_CONF_DIR\n"
       )
     }
     if (!checkDirectoryExist(hiveConfDir)) {
       throw new IllegalArgumentException(
-        s"hive-conf-dir: $hiveConfDir 不存在或不是一个目录"
+        s"hive-conf-dir: $hiveConfDir does not exist or is not a directory"
       )
     }
 
     if (!checkFileExist(s"$hiveConfDir/hive-site.xml")) {
       println(s"""
-           |------------------您的hive-site.xml在slave机器：${InetAddress.getLocalHost.getHostName} 路径：${hiveConfDir}未找到----------------------
-           |如果您使用的是Xpack-Spark集群中的Hive请使用以下配置：
+           |------------------your hive-site.xml not found, Path: ${hiveConfDir} Machine: ${InetAddress.getLocalHost.getHostName}----------------------
+           |If you are using hive in the xpack-spark cluster, use the following configuration：
            |spark.hadoop.hive.metastore.uris : "thrift://${hosts2Ips(
                    "spark-master1-1"
                  )}:9083,thrift://${hosts2Ips("spark-master2-1")}:9083"
-           |如果您是自建Hive集群用户，请在$${HADOOP_CONF_IDR}/hive-site.xml中查找hive.meta.uris中的值，并将域名替换为对应的ip
-           |如果您的Hive简历在Hadoop HA的集群上，您还需要额外配置Hadoop参数，具体可以参照用户文档<用户文档url>
+           |Other cases can refer to user document<To be added>
            |""".stripMargin)
     } else {
       val hiveSite = loadXml(s"$hiveConfDir/hive-site.xml")
-      try {
-        val hiveMetaUris = getXmlValue(hiveSite, "hive.metastore.uris")
-        println("""
-            |------------------为了在ServerlessSpark访问您的Hive，您应该配置下列参数,
-            |如果您的HIVE集群是建立在高用的HDFS集群上您还需要配置HDFS参数--------------""".stripMargin)
-        val hiveMetaUriPattern =
-          """thrift://([\d\w-\\.]+):?(\d+)?""".r("host", "port")
-        val uriConfig = hiveMetaUris
-          .split(",")
-          .map(uri => {
-            val hiveUris = hiveMetaUriPattern.findAllMatchIn(uri)
-            if (!hiveUris.hasNext) {
-              throw new IllegalArgumentException(
-                s"""hive.metastore.uris的值: $uri 格式不符合`thrift://([\\d\\w-\\\\.]+):?(\\d+)?`规范"""
-              )
-            }
-            val hiveUri = hiveUris.next()
-            val host = hiveUri.group("host")
-            val port = hiveUri.group("port")
-            val hostIp = getHostIp(host, hosts2Ips, useHosts)
-            "thrift://" + hostIp + (if (StringUtils.isBlank(port)) ""
-                                    else ":" + port)
-          })
-        println(s"""
+      val hiveMetaUris = getXmlValue(hiveSite, "hive.metastore.uris")
+      println(
+        """
+            |--------------------------------------------------------------------------------------
+            |To access your hive in serverless spark, you should configure the following parameters,
+            |If your hive cluster is built on a highly available HDFS cluster,
+            |you also need to configure the HDFS parameters
+            |---------------------------------------------------------------------------------------""".stripMargin
+      )
+      val hiveMetaUriPattern =
+        """thrift://([\d\w-\\.]+):?(\d+)?""".r("host", "port")
+      val uriConfig = hiveMetaUris
+        .split(",")
+        .map(uri => {
+          val hiveUris = hiveMetaUriPattern.findAllMatchIn(uri)
+          if (!hiveUris.hasNext) {
+            throw new IllegalArgumentException(
+              s"""hive.metastore.uris: $uri mismatch `thrift://([\\d\\w-\\\\.]+):?(\\d+)?`"""
+            )
+          }
+          val hiveUri = hiveUris.next()
+          val host = hiveUri.group("host")
+          val port = hiveUri.group("port")
+          val hostIp = getHostIp(host, hosts2Ips, useHosts)
+          "thrift://" + hostIp + (if (StringUtils.isBlank(port)) ""
+                                  else ":" + port)
+        })
+      println(s"""
              |"spark.hadoop.hive.metastore.uris" : \"${uriConfig.mkString(",")}"
              |""".stripMargin)
-        println(
-          "--------------------------------------end------------------------------------------------\n"
-        )
-      } catch {
-        case e: Exception =>
-          e.printStackTrace()
-          throw e
-      }
+      println(
+        "--------------------------------------end------------------------------------------------\n"
+      )
+
     }
   }
 
@@ -95,26 +91,29 @@ object GetConfForServerlessSpark {
       _hbaseConfDir.getOrElse(System.getenv("HBASE_CONF_DIR"))
     if (hbaseConfDir == null) {
       throw new IllegalArgumentException(
-        "HBASE_CONF_DIR 未找到，使用--hbase-conf-dir 指定 HBASE_CONF_DIR"
+        "HBASE_CONF_DIR not found，use --hbase-conf-dir to specify HBASE_CONF_DIR"
       )
     }
     if (!checkDirectoryExist(hbaseConfDir)) {
       throw new IllegalArgumentException(
-        s"hbase-conf-dir: $hbaseConfDir 不存在或不是一个目录"
+        s"hbase-conf-dir: $hbaseConfDir does not exist or is not a directory"
       )
     }
     if (!checkFileExist(s"$hbaseConfDir/hbase-site.xml")) {
       println(s"""
-           |------------------您的hbase-site.xml在slave机器：${InetAddress.getLocalHost.getHostName} 路径：${hbaseConfDir}未找到----------------------
-           |如果您使用的是云数据库Hbase版，可直接前往控制台->集群信息->数据库连接->ZK链接地址(专有网络),查看对应信息
-           |如果您的Hbase是自建集群，请参考用户文档<用户文档url>
+           |------------------your hbase-site.xml not found, Path: ${hbaseConfDir}  Machine: ${InetAddress.getLocalHost.getHostName}----------------------
+           |If you are using the cloud database HBase version,
+           |you can directly go to the
+           |`console -> cluster information -> database connection -> ZK link address (VPC)`
+           |to view the corresponding information
+           |Other cases can refer to user document<To be added>
            |""".stripMargin)
     } else {
       val hbaseSite = loadXml(s"$hbaseConfDir/hbase-site.xml")
       val zookeeperHosts =
         getXmlValue(hbaseSite, "hbase.zookeeper.quorum").split(",")
       println(
-        "------------------为了在ServerlessSpark访问您的Hbase，您应该给作业配置下列参数----------------------"
+        "------------------To access your Hbase in serverless spark, you should configure the following parameters----------------------"
       )
       val zookeeperPattern =
         """([\d\w-\\.]+):?(\d+)?""".r("host", "port")
@@ -123,7 +122,7 @@ object GetConfForServerlessSpark {
           val zookeeperHosts = zookeeperPattern.findAllMatchIn(elem)
           if (!zookeeperHosts.hasNext) {
             throw new IllegalArgumentException(
-              s"""hbase.zookeeper.quorum的值: $elem 格式不符合`([\\d\\w-\\\\.]+):?(\\d+)?`规范"""
+              s"""hbase.zookeeper.quorum: $elem mismatch `([\\d\\w-\\\\.]+):?(\\d+)?`"""
             )
           }
           val zookeeperHost = zookeeperHosts.next
@@ -133,7 +132,7 @@ object GetConfForServerlessSpark {
           hostIp + (if (StringUtils.isBlank(port)) "" else ":" + port)
         })
         .mkString(",")
-      println(s"您的hbase.zookeeper.quorum: $quorum")
+      println(s"your hbase.zookeeper.quorum: $quorum")
       println(
         "--------------------------------------end------------------------------------------------\n"
       )
@@ -152,12 +151,12 @@ object GetConfForServerlessSpark {
       _hadoopConfDir.getOrElse(System.getenv("HADOOP_CONF_DIR"))
     if (hadoopConfDir == null) {
       throw new IllegalArgumentException(
-        "HADOOP_CONF_DIR 未找到，使用--hadoop-conf-dir 指定 HADOOP_CONF_DIR"
+        "HADOOP_CONF_DIR not found，use --hadoop-conf-dir to specify HADOOP_CONF_DIR"
       )
     }
     if (!checkDirectoryExist(hadoopConfDir)) {
       throw new IllegalArgumentException(
-        s"hadoop-conf-dir: $hadoopConfDir 不存在或不是一个目录"
+        s"hadoop-conf-dir: $hadoopConfDir does not exist or is not a directory"
       )
     }
     val coreSite = loadXml(s"$hadoopConfDir/core-site.xml")
@@ -170,7 +169,7 @@ object GetConfForServerlessSpark {
       .findAllMatchIn(defaultFSValue)
     if (!defaultFSGrpups.hasNext) {
       throw new IllegalArgumentException(
-        s"""defaultFS的值: $defaultFSValue 格式不符合`hdfs://([\\d\\w-\\\\.]+):?(\\d+)?`规范"""
+        s"""defaultFS: $defaultFSValue  mismatch `hdfs://([\\d\\w-\\\\.]+):?(\\d+)?`"""
       )
     }
     val defaultFSGroup = defaultFSGrpups.next()
@@ -179,9 +178,9 @@ object GetConfForServerlessSpark {
     val ha = port == null
 
     if (ha) {
-      println("------------------您的HDFS集群以高可用模式部署----------------------")
+      println("------------------Your HDFS cluster is deployed in high availability mode----------------------")
       println(s"your defaultFS is: hdfs://$hostname")
-      println("为了让SeverlessSpark访问您的Hadoop，您应该配置下列参数: ")
+      println("To access your HDFS in serverless spark, you should configure the following parameters")
 
       val nameServicesValue = getXmlValue(hdfsSite, "dfs.nameservices")
       println(s"""
@@ -247,7 +246,6 @@ object GetConfForServerlessSpark {
       SparkSession
         .builder()
         .appName("GetSparkConf")
-        .master("local")
         .getOrCreate()
 
     val parser = GetConfigCommandLine.parser
@@ -255,7 +253,7 @@ object GetConfForServerlessSpark {
       case Some(x) => x
       case None =>
         parser.showTryHelp
-        throw new IllegalArgumentException("无法正确解析参数，参数输入有误")
+        throw new IllegalArgumentException("Unable to parse parameter correctly, wrong parameter input")
     }
     for (target <- config.targets) {
       target match {

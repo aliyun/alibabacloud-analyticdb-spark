@@ -31,7 +31,7 @@ object CommonUtils {
       hosts2Ip.foreach(println)
     }
     if (hosts2Ip.isEmpty) {
-      throw new IllegalArgumentException("hosts文件为空，无法从hosts文件解析域名")
+      throw new IllegalArgumentException("hosts file is empty，can not resolve hostsname from hosts file")
     }
     hosts2Ip
   }
@@ -92,7 +92,7 @@ object CommonUtils {
       Preconditions.checkArgument(hosts2Ip.nonEmpty)
       hosts2Ip.getOrElse(
         hostName,
-        throw new NoSuchElementException(s"本地 Hosts文件中没有找到: $hostName, 无法解析$hostName")
+        throw new NoSuchElementException(s"not found in local hots file: $hostName, can not resolve $hostName")
       )
     } else {
       InetAddress.getByName(hostName).getHostAddress

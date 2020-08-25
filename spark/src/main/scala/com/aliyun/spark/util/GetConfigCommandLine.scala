@@ -1,7 +1,5 @@
 package com.aliyun.spark.util
 
-import org.apache.hadoop.util.hash.Hash
-
 import scala.collection.mutable
 
 case class Config(hbaseConfDir: Option[String] = None,
@@ -28,36 +26,37 @@ object GetConfigCommandLine {
       .action((x, c) => c.copy(hadoopConfDir = Some(x)))
       .optional()
       .maxOccurs(1)
-      .text("指定hadoop conf dir路径, 默认会从集群环境变量 HADOOP_CONF_DIR 读取")
+      .text("Specify the hadoop-conf-dir path. By default will read from the cluster environment variable HADOOP_CONF_DIR")
     opt[String]("hive-conf-dir")
       .valueName("<path/to/hive/conf/dir>")
       .action((x, c) => c.copy(hiveConfDir = Some(x)))
       .optional()
       .maxOccurs(1)
-      .text("指定hive conf dir路径, 默认会从集群环境变量 HIVE_CONF_DIR 读取")
+      .text("Specify the hive-conf-dir path. By default will read from the cluster environment variable HIVE_CONF_DIR")
     opt[String]("hosts-file-path")
       .valueName("<path/to/hosts/file>")
       .action((x, c) => c.copy(hostsFilePath = Some(x)))
       .optional()
       .hidden()
       .maxOccurs(1)
-      .text("指定hostsfile的路径，用于本地测试，默认隐藏选项")
+      .text("Specify the path of hostsfile, which is used for local test, and is hidden by default")
     opt[Boolean]("use-hosts-file")
       .hidden()
       .valueName("true|false")
       .action((x, c) => c.copy(useHostsFile = x))
       .optional()
-      .text("true 使用本地/etc/hosts 解析域名， false 使用Java InetAddress 解析域名, 默认为true")
+      .text("true: uses the local /etc/hosts to resolve the domain name," +
+        "false: uses Java InetAddress to resolve the domain name. The default value is true")
     opt[Unit]("verbose")
       .action((_, c) => c.copy(verbose = false))
       .optional()
-      .text("指定--verbose输出更多调试信息")
+      .text("output more debugging information")
     opt[String]("hbase-conf-dir")
       .valueName("<path/to/hbase/conf/dir>")
       .action((x, c) => c.copy(hiveConfDir = Some(x)))
       .optional()
       .maxOccurs(1)
-      .text("指定hbae conf dir路径,默认会从集群环境变量 HIVE_CONF_DIR 读取")
+      .text("Specify the hbase-conf-dir path. By default will read from the cluster environment variable HBASE_CONF_DIR")
     help("help").text("prints this usage text")
     cmd("get")
       .action((x, c) => c.copy(mode = "get"))
@@ -67,11 +66,11 @@ object GetConfigCommandLine {
           .unbounded()
           .required()
           .action((x, c) => c.copy(targets = c.targets :+ x))
-          .text("get hadoop|hive|hbase，可填写多个，以空格分开"),
+          .text("get hadoop|hive|hbase, More than one can be filled in, separated by spaces"),
         checkConfig(c => {
           val illegalTargets = c.targets.filterNot(supportComponent.contains)
           if (illegalTargets.nonEmpty) {
-            failure(s"不支持获取这些组件的参数：${illegalTargets}")
+            failure(s"these components is not supported：${illegalTargets}")
           } else {
             success
           }
@@ -80,7 +79,7 @@ object GetConfigCommandLine {
     checkConfig(c => {
       if (!c.mode.equals("get")) {
         showUsage
-        failure("使用GetSparkConf 需要输入 `get` 命令 ")
+        failure("required GetSparkConf `get` command")
       } else {
         success
       }
