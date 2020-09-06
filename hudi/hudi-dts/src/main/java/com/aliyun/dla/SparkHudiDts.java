@@ -149,8 +149,7 @@ public class SparkHudiDts {
         convertAllTypesToString = Boolean.parseBoolean(getConfig(properties, CONVERT_ALL_TYPES_TO_STRING, "false"));
         convertDecimalToString = Boolean.parseBoolean(getConfig(properties, CONVERT_DECIMAL_TO_STRING, "false"));
 
-        Map<String, Pair<Integer, Integer>> decimalColumns = getUserConfigDecimals(getConfig(properties, DECIMAL_COLUMNS_DEFINITION, ""));
-
+        Map<String, Map<String, Pair<Integer, Integer>>> decimalColumns = getUserConfigDecimals(getConfig(properties, DECIMAL_COLUMNS_DEFINITION, ""));
         // dts config
         String fetchMessageMaxBytes = getConfig(properties, FETCH_MESSAGE_MAX_BYTES, null);
         String username = getConfig(properties, DTS_USERNAME, null);
@@ -224,7 +223,7 @@ public class SparkHudiDts {
                         Pair<String, String> dbAndTablePair = getDBAndTablePair(record);
                         String dbName = dbAndTablePair.getLeft();
                         String tableName = dbAndTablePair.getRight();
-
+                        Map<String, Pair<Integer, Integer>> columnTypes = decimalColumns.get(tableName);
                         // 获取元数据字段列表
                         List<StructField> structFields = Utils.getMetaStructFields();
 
@@ -259,7 +258,7 @@ public class SparkHudiDts {
                             Object beforeValue = fieldArrayBefore.take();
 
                             // 获取字段类型
-                            StructField structField = buildStructField(field, field.getName(), afterValue, convertDecimalToString, decimalColumns);
+                            StructField structField = buildStructField(field, field.getName(), afterValue, convertDecimalToString, columnTypes);
                             if (convertAllTypesToString) {
                                 structField = convertStructTypeToStringType(structField);
                             }

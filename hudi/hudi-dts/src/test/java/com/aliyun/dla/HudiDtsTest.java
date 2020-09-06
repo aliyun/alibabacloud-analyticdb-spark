@@ -144,7 +144,7 @@ public class HudiDtsTest {
 
     @Test
     public void testGetUserConfigDecimals() {
-        System.out.println(getUserConfigDecimals("a,10,2:b,5,2:c,6,1"));
+        System.out.println(getUserConfigDecimals("t1:a,10,2;b,5,2;c,6,1#t2:a1,5,2"));
     }
 
     @Test

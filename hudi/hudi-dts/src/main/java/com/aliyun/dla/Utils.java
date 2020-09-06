@@ -18,6 +18,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import py4j.StringUtil;
 import scala.Int;
 import scala.Tuple2;
 
@@ -175,21 +176,33 @@ public class Utils {
     }
 
     /**
-     * 定义按照如下格式
-     * a,10,2:b,8,2:...
+     * 定义按照如下格式，即 表名:列名,precision,scale;列名1,precision,scale#表名1:列名1,precision,scale
+     * t1:a,10,2;b,8,2#t2:a1,9,2;b1,5,2#...
      * @param decimals
      * @return
      */
-    public static Map<String, Pair<Integer, Integer>> getUserConfigDecimals(String decimals) {
-        Map<String, Pair<Integer, Integer>> map = new HashMap<>();
+    public static Map<String, Map<String, Pair<Integer, Integer>>> getUserConfigDecimals(String decimals) {
+        Map<String, Map<String, Pair<Integer, Integer>>> map = new HashMap<>();
         if (StringUtils.isEmpty(decimals)) {
             return map;
         }
-        String[] columns = decimals.split(":");
-        for (String column : columns) {
-            String[] columnInfo = column.split(",");
-            map.put(columnInfo[0], new ImmutablePair<>(Integer.parseInt(columnInfo[1]), Integer.parseInt(columnInfo[2])));
+        String[] tableColumns = decimals.split("#");
+        for (String tableColumn : tableColumns) {
+            if (StringUtils.isNotEmpty(tableColumn)) {
+                String[] tableAndColumns = tableColumn.split(":");
+                String tableName = tableAndColumns[0];
+                if (!map.containsKey(tableName)) {
+                    map.put(tableName, new HashMap<>());
+                }
+                Map<String, Pair<Integer, Integer>> columnMap = map.get(tableName);
+                String[] columns = tableAndColumns[1].split(";");
+                for (String column : columns) {
+                    String[] columnInfo = column.split(",");
+                    columnMap.put(columnInfo[0], new ImmutablePair<>(Integer.parseInt(columnInfo[1]), Integer.parseInt(columnInfo[2])));
+                }
+            }
         }
+
         return map;
     }
 

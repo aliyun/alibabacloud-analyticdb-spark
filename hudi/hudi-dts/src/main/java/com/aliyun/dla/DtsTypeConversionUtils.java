@@ -197,7 +197,7 @@ public class DtsTypeConversionUtils {
                      */
                     int precision = DEFAULT_PRECISION;
                     int scale = DEFAULT_SCALE;
-                    if (decimalColumns.containsKey(fieldName)) {
+                    if (decimalColumns != null && decimalColumns.containsKey(fieldName)) {
                         Pair<Integer, Integer> pair = decimalColumns.get(fieldName);
                         precision = pair.getLeft();
                         scale = pair.getRight();
