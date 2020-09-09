@@ -40,7 +40,8 @@ public class DtsTypeConversionUtils {
      * @param dtsValue
      * @return
      */
-    public static Object convertDtsValueToDataType(StructField structField, String tableName, Field field, Object dtsValue, boolean convertDecimalToString) {
+    public static Object convertDtsValueToDataType(StructField structField, String tableName, Field field, Object dtsValue,
+                                                   boolean convertDecimalToString, boolean convertAllTypesToString) {
         int dtsTypeId = field.getDataTypeNumber();
         if (dtsValue == null) {
             LOG.warn("dts value is null, dtsTypeId = " + dtsTypeId);
@@ -51,7 +52,7 @@ public class DtsTypeConversionUtils {
             case 0 : // DECIMAL
             case 246 : { // DECIMAL_NEW
                 com.alibaba.dts.formats.avro.Decimal de = (com.alibaba.dts.formats.avro.Decimal) dtsValue;
-                if (convertDecimalToString) {
+                if (convertDecimalToString || convertAllTypesToString) {
                     return de.getValue();
                 } else {
                     BigDecimal bigDecimalValue = new BigDecimal(de.getValue());
@@ -70,15 +71,27 @@ public class DtsTypeConversionUtils {
             case 3 : // INT32
             case 9 : { // INT24
                 com.alibaba.dts.formats.avro.Integer integer = (com.alibaba.dts.formats.avro.Integer) dtsValue;
-                return Integer.parseInt(integer.getValue());
+                if (convertAllTypesToString) {
+                    return integer.getValue();
+                } else {
+                    return Integer.parseInt(integer.getValue());
+                }
             }
             case 4 : { // FLOAT
                 com.alibaba.dts.formats.avro.Float aFloat = (com.alibaba.dts.formats.avro.Float) dtsValue;
-                return Float.parseFloat(aFloat.getValue().toString());
+                if (convertAllTypesToString) {
+                    return aFloat.getValue().toString();
+                } else {
+                    return Float.parseFloat(aFloat.getValue().toString());
+                }
             }
             case 5 : { // DOUBLE
                 com.alibaba.dts.formats.avro.Float f = (com.alibaba.dts.formats.avro.Float) dtsValue;
-                return f.getValue();
+                if (convertAllTypesToString) {
+                    return f.getValue().toString();
+                } else {
+                    return f.getValue();
+                }
             }
             case 6 : { // NULL
                 MysqlFieldConverter mysqlFieldConverter = new MysqlFieldConverter();
@@ -88,12 +101,20 @@ public class DtsTypeConversionUtils {
             case 7 : // TIMESTAMP
             case 17 : { // TIMESTAMP_NEW
                 com.alibaba.dts.formats.avro.Timestamp t = (com.alibaba.dts.formats.avro.Timestamp) dtsValue;
-                Timestamp timestamp = new Timestamp(t.getTimestamp());
-                return timestamp.getTime() * 1000;
+                if (convertAllTypesToString) {
+                    return t.getTimestamp().toString();
+                } else {
+                    Timestamp timestamp = new Timestamp(t.getTimestamp());
+                    return timestamp.getTime() * 1000;
+                }
             }
             case 8 : { // Type.INT64
                 com.alibaba.dts.formats.avro.Integer integer = (com.alibaba.dts.formats.avro.Integer) dtsValue;
-                return Long.parseLong(integer.getValue());
+                if (convertAllTypesToString) {
+                    return integer.getValue();
+                } else {
+                    return Long.parseLong(integer.getValue());
+                }
             }
             case 10 : // DATE
             case 14 : { // DATE_NEW
@@ -106,31 +127,30 @@ public class DtsTypeConversionUtils {
                         dataTime.getMinute() == null ? 00 : dataTime.getMinute(),
                         dataTime.getSecond() == null ? 00 : dataTime.getSecond(),
                         dataTime.getMillis() == null ? 00 : dataTime.getMillis()).getTime());
-                return new Long(date.toLocalDate().toEpochDay()).intValue();
+                if (convertAllTypesToString) {
+                    return String.valueOf(date.getTime());
+                } else {
+                    return new Long(date.toLocalDate().toEpochDay()).intValue();
+                }
             }
             case 11 : // TIME
+            case 12 : // DATETIME
+            case 18 : // DATETIME_NEW
             case 19 : { // TIME_NEW
                 com.alibaba.dts.formats.avro.DateTime dataTime = (com.alibaba.dts.formats.avro.DateTime) dtsValue;
-                return new Timestamp(
+                Timestamp timestamp = new Timestamp(
                         dataTime.getYear() == null ? 0 : dataTime.getYear() - 1900,
                         dataTime.getMonth() == null ? 0 : dataTime.getMonth() - 1,
                         dataTime.getDay() == null ? 0 : dataTime.getDay(),
                         dataTime.getHour() == null ? 00 : dataTime.getHour(),
                         dataTime.getMinute() == null ? 00 : dataTime.getMinute(),
                         dataTime.getSecond() == null ? 00 : dataTime.getSecond(),
-                        dataTime.getMillis() == null ? 00 : dataTime.getMillis()).getTime() * 1000;
-            }
-            case 12 : // DATETIME
-            case 18 : { // DATETIME_NEW
-                com.alibaba.dts.formats.avro.DateTime dataTime = (com.alibaba.dts.formats.avro.DateTime) dtsValue;
-                return new Timestamp(
-                        dataTime.getYear() == null ? 0 : dataTime.getYear() - 1900,
-                        dataTime.getMonth() == null ? 0 : dataTime.getMonth() - 1,
-                        dataTime.getDay() == null ? 0 : dataTime.getDay(),
-                        dataTime.getHour() == null ? 00 : dataTime.getHour(),
-                        dataTime.getMinute() == null ? 00 : dataTime.getMinute(),
-                        dataTime.getSecond() == null ? 00 : dataTime.getSecond(),
-                        dataTime.getMillis() == null ? 00 : dataTime.getMillis()).getTime() * 1000;
+                        dataTime.getMillis() == null ? 00 : dataTime.getMillis());
+                if (convertAllTypesToString) {
+                    return String.valueOf(timestamp.getTime());
+                } else {
+                    return timestamp.getTime() * 1000;
+                }
             }
             case 13: { // Type.YEAR
                 com.alibaba.dts.formats.avro.DateTime dateTime = (com.alibaba.dts.formats.avro.DateTime) dtsValue;

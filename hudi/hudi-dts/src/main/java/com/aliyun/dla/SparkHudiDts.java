@@ -266,17 +266,8 @@ public class SparkHudiDts {
 
                             // 获取字段值
                             Object value = operation != Operation.DELETE ? afterValue : beforeValue;
-                            Object object = convertDtsValueToDataType(structField, tableName, field, value, convertDecimalToString);
-                            if (object == null) {
-                                dataArray.add(null);
-                            } else {
-                                if (convertAllTypesToString) {
-                                    String str = object.toString();
-                                    dataArray.add(str);
-                                } else {
-                                    dataArray.add(object);
-                                }
-                            }
+                            Object object = convertDtsValueToDataType(structField, tableName, field, value, convertDecimalToString, convertAllTypesToString);
+                            dataArray.add(object);
                         }
 
                         // 生成带元数据信息的Row
