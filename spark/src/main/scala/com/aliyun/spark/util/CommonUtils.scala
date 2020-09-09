@@ -17,19 +17,29 @@ object CommonUtils {
     val ipPattern = """^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$"""
     checkFileExist(hostsFiles)
     val fileSource = Source.fromFile(hostsFiles)
-    val hosts2Ip = fileSource
-      .getLines()
+    val (fileSource_1,fileSource_2) = fileSource.getLines().duplicate
+    val hosts2Ip = fileSource_1
       .map(_.trim)
-      .filterNot(_.startsWith("#"))
+      .filterNot(line => line.startsWith("#"))
+      .filterNot(StringUtils.isBlank(_))
       .map(_.split("\\s+"))
       .filter(_(0).matches(ipPattern))
       .map(array => (array(0), array.takeRight(array.length - 1)))
       .flatMap(tuple => tuple._2.map((_, tuple._1)))
       .toMap
-    fileSource.close()
+
     if (!silent) {
-      hosts2Ip.foreach(println)
+      println("==============your hosts file contents==============")
+      val anotherFileSource = fileSource_2
+        .map(_.trim)
+        .filterNot(line => line.startsWith("#"))
+        .filterNot(StringUtils.isBlank(_))
+        .filterNot(_.startsWith("#"))
+        .mkString(",\n")
+      println(anotherFileSource)
+      println("=======================end==========================")
     }
+    fileSource.close()
     if (hosts2Ip.isEmpty) {
       throw new IllegalArgumentException("hosts file is empty，can not resolve hostsname from hosts file")
     }

@@ -46,44 +46,6 @@
             <scope>system</scope>
             <systemPath>${basedir}/deps/hadoop-aliyun-2.7.2-rc5.jar</systemPath>
         </dependency>
-
-        <!--Spark Hbase connector-->
-        <dependency>
-            <groupId>com.aliyun.apsaradb</groupId>
-            <artifactId>alihbase-spark</artifactId>
-            <version>1.1.3_2.4.3-1.0.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun.hbase</groupId>
-            <artifactId>alihbase-client</artifactId>
-            <version>${hbase.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-all</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun.hbase</groupId>
-            <artifactId>alihbase-protocol</artifactId>
-            <version>${hbase.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun.hbase</groupId>
-            <artifactId>alihbase-server</artifactId>
-            <version>${hbase.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-all</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <!--GetConfig Util Dependency-->
         <dependency>
             <groupId>dnsjava</groupId>
@@ -146,6 +108,11 @@
                                         want to be packed in your fat jar -->
                                     <include>*:*</include>
                                 </includes>
+                                <excludes>
+                                    <exclude>org.apache.hadoop:*</exclude>
+                                    <exclude>io.netty:*</exclude>
+                                    <exclude>org.slf4j:*</exclude>
+                                </excludes>
                             </artifactSet>
                             <filters>
                                 <filter>
@@ -169,5 +136,93 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>hbase</id>
+            <dependencies>
+                <!--Spark Hbase connector-->
+                <dependency>
+                    <groupId>com.aliyun.apsaradb</groupId>
+                    <artifactId>alihbase-spark</artifactId>
+                    <version>1.1.3_2.4.3-1.0.4</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.aliyun.hbase</groupId>
+                    <artifactId>alihbase-client</artifactId>
+                    <version>${hbase.version}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-all</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>com.aliyun.hbase</groupId>
+                    <artifactId>alihbase-protocol</artifactId>
+                    <version>${hbase.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.aliyun.hbase</groupId>
+                    <artifactId>alihbase-server</artifactId>
+                    <version>${hbase.version}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-all</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>phoenix4</id>
+            <properties>
+                <phoenix.version>4.12.0-AliHBase-1.1-0.6</phoenix.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.aliyun.phoenix</groupId>
+                    <artifactId>ali-phoenix-core</artifactId>
+                    <version>${phoenix.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.aliyun.odps</groupId>
+                            <artifactId>odps-sdk-core</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.aliyun.odps</groupId>
+                            <artifactId>odps-sdk-mapred</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.aliyun.odps</groupId>
+                            <artifactId>odps-sdk-commons</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>phoenix5-thin</id>
+            <properties>
+                <phoenix.version>5.2.1-HBase-2.x</phoenix.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.aliyun.phoenix</groupId>
+                    <artifactId>ali-phoenix-shaded-thin-client</artifactId>
+                    <version>${phoenix.version}</version>
+                </dependency>
+            </dependencies>
+
+        </profile>
+
+    </profiles>
 
 </project>

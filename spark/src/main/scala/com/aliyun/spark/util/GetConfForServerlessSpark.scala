@@ -213,7 +213,7 @@ object GetConfForServerlessSpark {
         val rpcAddressValues = rpcPattern.findAllMatchIn(rpcAddressStr)
         if (!rpcAddressValues.hasNext) {
           throw new IllegalArgumentException(
-            s""" dfs.namenode.rpc-address.$nameServicesValue.$nameNodesValue: $rpcAddressStr 格式不符合(\\d\\w-\\\\.]+):(\\d+)`规范"""
+            s""" dfs.namenode.rpc-address.$nameServicesValue.$nameNodesValue: $rpcAddressStr not match `(\\d\\w-\\\\.]+):(\\d+)`"""
           )
         }
         val rpcAddressValue = rpcAddressValues.next()
@@ -233,6 +233,8 @@ object GetConfForServerlessSpark {
       )
       val hostIp = getHostIp(hostname, hosts2Ips, useHosts)
       println(s"your defaultFS is: hdfs://$hostIp:$port")
+      println("if you need access hive, please add below parameter: ")
+      println(s""""spark.dla.extra.hosts" : "$hostname $hostIp" """)
       println(
         "---------------------------------end----------------------------------------\n"
       )
@@ -255,6 +257,7 @@ object GetConfForServerlessSpark {
         parser.showTryHelp
         throw new IllegalArgumentException("Unable to parse parameter correctly, wrong parameter input")
     }
+    getHostFile(false, config.hostsFilePath)
     for (target <- config.targets) {
       target match {
         case "hadoop" =>
