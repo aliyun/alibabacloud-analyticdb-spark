@@ -9,41 +9,25 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hudi-dts</artifactId>
+    <artifactId>hudi-jdbc</artifactId>
 
     <properties>
-        <hudi.version>0.6.0</hudi.version>
+        <hudi.version>0.5.2-incubating-dla</hudi.version>
         <spark.version>2.4.3</spark.version>
-        <hadoop-aliyun.version>2.7.2.4-oss-magic-copy-12</hadoop-aliyun.version>
-        <aliyun-sdk-oss.version>3.3.0</aliyun-sdk-oss.version>
+        <hadoop-aliyun.version>2.9.1</hadoop-aliyun.version>
+        <aliyun-sdk-oss.version>3.1.0</aliyun-sdk-oss.version>
         <aliyun-java-sdk.version>3.7.1</aliyun-java-sdk.version>
         <hadoop.version>3.1.1</hadoop.version>
         <dla-datalake-format>1.0-SNAPSHOT</dla-datalake-format>
-        <mysql-connector.version>8.0.16</mysql-connector.version>
+        <mysql-connector.version>5.1.47</mysql-connector.version>
         <scala.version>2.11</scala.version>
         <dts.version>1.0-SNAPSHOT</dts.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.alibaba.dts</groupId>
-            <artifactId>subscribe_demo</artifactId>
-            <version>${dts.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.kafka</groupId>
-                    <artifactId>kafka-clients</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql-kafka-0-10_${scala.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
         <dependency>
@@ -57,20 +41,15 @@
             <version>${hudi.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
-            <artifactId>hudi-dla-sync</artifactId>
-            <version>${hudi.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-avro_${scala.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>com.aliyun.dla</groupId>
             <artifactId>dla-hudi-format</artifactId>
             <version>${dla-datalake-format}</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -158,5 +137,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

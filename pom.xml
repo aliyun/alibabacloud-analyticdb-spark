@@ -29,7 +29,7 @@
 
     <modules>
         <module>spark</module>
-        <module>hudi</module>
+        <!--<module>hudi</module>-->
     </modules>
 
 </project>
