@@ -113,5 +113,6 @@ pr.tile.color(colors).renderPng().write("df-ndvi.png")
 ```
 
 <p>原始结果与计算结果示意图如下，可以看到绿色地区为计算出的植被像素值。</p>
+### 结果输出如下:
 <img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/algorithm5.png"></img>
 <img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/algorithm6.png"></img>
