@@ -68,6 +68,4 @@ b2.tile.color(colors).renderPng().write("b2.png")
 ```
 ### 输出结果:
 <p>下图从左到右依次为RGB合成图像、Band2图像和masking输出图像。通过对比输出结果可以看到，部分城市建筑像素被保留，其他全部变成了NoData。</p>
-<img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking2.png"></img>
-<img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking3.png"></img>
-<img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking4.png"></img>
+<img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking2.png"></img><img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking3.png"></img><img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/masking4.png"></img>
