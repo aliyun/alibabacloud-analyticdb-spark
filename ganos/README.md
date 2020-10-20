@@ -1,7 +1,7 @@
 ## DLA Ganos 测试案例
 
 ### 数据准备
-Ganos案例部分数据已经包含在resource文件中
+Ganos案例部分数据已经包含在resource文件夹中
 
 SpatialJoin案例需要单独下载如下数据：
 * [LC08_L1TP_121035_20190702_20190706_01_T1.tiff](oss://dla-ganos-bj/public/LC08_L1TP_121035_20190702_20190706_01_T1.TIF)
