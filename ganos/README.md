@@ -4,8 +4,8 @@
 Ganos案例部分数据已经包含在resource文件夹中
 
 SpatialJoin案例需要单独下载如下数据：
-* [LC08_L1TP_121035_20190702_20190706_01_T1.tiff](oss://dla-ganos-bj/public/LC08_L1TP_121035_20190702_20190706_01_T1.TIF)
-* [srtm_60_05.tiff](oss://dla-ganos-bj/public/srtm_60_05.tif)
+* [LC08_L1TP_121035_20190702_20190706_01_T1.tif](https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/LC08_L1TP_121035_20190702_20190706_01_T1.TIF)
+* [srtm_60_05.tif](https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/srtm_60_05.tif)
 
 下载完成后将文件放在main/resources目录下。
 
