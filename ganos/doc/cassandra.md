@@ -43,7 +43,7 @@ params = Map(
   Params.CatalogParam.getName -> "test_sft"
 )
 ```
-输出化数据库连接完成后，可以创建时空表并导入数据。这里我们创建一个名为testpoints的表，该表还有一个时间字段(dtg)和一个空间字段(geom:Point):
+初始化数据库连接完成后，可以创建时空表并导入数据。这里我们创建一个名为testpoints的表，该表拥有一个时间字段(dtg)和一个空间字段(geom:Point):
 ```scala
 //创建DataStore用于数据写入
 val ds = DataStoreFinder.getDataStore(params).asInstanceOf[CassandraDataStore]
@@ -64,7 +64,7 @@ val toAdd = (0 until 10).map { i =>
    sf
 }
 ```
-然后我们通过Cassandra的CQL工具查看创建的表和写入的数据，注意表名称为
+然后我们通过Cassandra的CQL工具查看创建的表和写入的数据：
 <img align="center" height="200px" src="https://dla-ganos-bj.oss-cn-beijing.aliyuncs.com/public/cassandra1.png"></img>
 ##2. DLA Ganos进行时空查询
 ```scala
@@ -144,7 +144,8 @@ root
 ```
 
 ## 3. 计算结果写入Cassandra
-DLA Ganos同样支持数据写回到Cassandra数据库。我们紧接前面代码，对查询出的points表调用ST_BufferPoint函数，对每个点生成缓冲区，然后写入到Cassandra表中。关于ST_BufferPoint详细解释可以参考时空几何函数参考。
+DLA Ganos同样支持数据写回到Cassandra数据库。我们紧接前面代码，对查询出的points表调用ST_BufferPoint函数，对每个点生成缓冲区，然后写入到Cassandra表中。关于ST_BufferPoint详细解释可以参考[时空几何函数参考](https://help.aliyun.com/document_detail/186657.html?spm=a2c4g.11186623.6.782.261f27e8DYk813)
+。
 ```scala
 points.createOrReplaceTempView("points")
 val buffer = spark.sql("select name,dtg,ST_BufferPoint(geom,10) as geom from points")
