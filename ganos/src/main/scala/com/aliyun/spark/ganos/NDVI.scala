@@ -20,7 +20,6 @@
 package com.aliyun.spark.ganos
 
 import com.aliyun.ganos.dla.raster._
-import com.aliyun.ganos.dla.raster.geotiff._
 import com.typesafe.config.ConfigFactory
 import geotrellis.raster._
 import geotrellis.raster.io.geotiff.SinglebandGeoTiff
@@ -50,10 +49,10 @@ object NDVI extends App {
   val st_ = "L8-B%d-Elkton-VA.tiff"
   val bandNumbers = 1 to 4
   val bandColNames = bandNumbers.map(b ⇒ s"band_$b").toArray
-  val df1 = spark.read.geotiff.load(getClass.getResource("/" + st_.format(bandNumbers(0))).getPath).select($"spatial_key", $"tile" as "band_1").asLayer
-  val df2 = spark.read.geotiff.load(getClass.getResource("/" + st_.format(bandNumbers(1))).getPath).select($"spatial_key", $"tile" as "band_2").asLayer
-  val df3 = spark.read.geotiff.load(getClass.getResource("/" + st_.format(bandNumbers(2))).getPath).select($"spatial_key", $"tile" as "band_3").asLayer
-  val df4 = spark.read.geotiff.load(getClass.getResource("/" + st_.format(bandNumbers(3))).getPath).select($"spatial_key", $"tile" as "band_4").asLayer
+  val df1 = spark.read.ganosRaster.load(getClass.getResource("/" + st_.format(bandNumbers(0))).getPath).select($"spatial_key", $"tile" as "band_1").asLayer
+  val df2 = spark.read.ganosRaster.load(getClass.getResource("/" + st_.format(bandNumbers(1))).getPath).select($"spatial_key", $"tile" as "band_2").asLayer
+  val df3 = spark.read.ganosRaster.load(getClass.getResource("/" + st_.format(bandNumbers(2))).getPath).select($"spatial_key", $"tile" as "band_3").asLayer
+  val df4 = spark.read.ganosRaster.load(getClass.getResource("/" + st_.format(bandNumbers(3))).getPath).select($"spatial_key", $"tile" as "band_4").asLayer
   val df = df1 spatialJoin df2 spatialJoin df3 spatialJoin df4
 
   val ndvi = udf((red: Tile, nir: Tile) => {

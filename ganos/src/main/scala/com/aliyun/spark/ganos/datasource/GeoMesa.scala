@@ -2,7 +2,6 @@ package com.aliyun.spark.ganos.datasource
 
 import com.aliyun.ganos.dla._
 import com.aliyun.ganos.dla.geometry._
-import com.aliyun.ganos.dla.geomesa._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -26,8 +25,8 @@ object GeoMesa extends App {
 
   //配置GeoMesa连接信息
   val dsParams: Map[String, String] = Map("hbase.zookeepers"->"localhost:2181","hbase.catalog"->"AIS")
-  val df=spark.read.ganos.geomesa(dsParams,"point")
-  df.show
+  //val df=spark.read.ganos.geomesa(dsParams,"point")
+  //df.show
 
   def additionalConf = new SparkConf(false)
 
