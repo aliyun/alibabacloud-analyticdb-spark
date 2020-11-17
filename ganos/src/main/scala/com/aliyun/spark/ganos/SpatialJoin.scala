@@ -1,10 +1,9 @@
 package com.aliyun.spark.ganos
 
-import com.aliyun.ganos.dla._
 import com.aliyun.ganos.dla.raster._
-import com.aliyun.ganos.dla.raster.geotiff._
 import com.aliyun.ganos.dla.raster.util.Render
 import geotrellis.raster._
+import com.aliyun.ganos.dla._
 import org.apache.spark.sql._
 
 /**
@@ -24,8 +23,8 @@ object SpatialJoin extends App{
   import spark.implicits._
 
   //定义Join图层
-  val df1 = spark.read.ganos.geotiff.load(getClass.getResource("/LC08_L1TP_121035_20190702_20190706_01_T1.TIF").getPath).asLayer
-  val df2 = spark.read.ganos.geotiff.load(getClass.getResource("/srtm_60_05.tif").getPath).asLayer
+  val df1 = spark.read.ganosRaster.load(getClass.getResource("/LC08_L1TP_121035_20190702_20190706_01_T1.TIF").getPath).asLayer
+  val df2 = spark.read.ganosRaster.load(getClass.getResource("/srtm_60_05.tif").getPath).asLayer
 
   df1.show
   df2.show

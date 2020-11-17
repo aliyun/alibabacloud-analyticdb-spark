@@ -1,6 +1,6 @@
 package com.aliyun.spark.ganos
 
-import com.aliyun.ganos.dla._
+
 import com.aliyun.ganos.dla.geometry._
 import com.aliyun.ganos.dla.oss._
 import com.aliyun.ganos.dla.raster._
@@ -14,6 +14,7 @@ import geotrellis.spark.store.hbase.HBaseLayerWriter
 import geotrellis.store._
 import geotrellis.store.hbase.{HBaseAttributeStore, HBaseInstance}
 import geotrellis.store.index.ZCurveKeyIndexMethod
+import com.aliyun.ganos.dla._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession

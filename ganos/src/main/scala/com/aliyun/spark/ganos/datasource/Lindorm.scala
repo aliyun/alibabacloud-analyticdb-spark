@@ -5,7 +5,7 @@ import java.net.URI
 import geotrellis.raster.Tile
 import com.aliyun.ganos.dla._
 import com.aliyun.ganos.dla.raster._
-import com.aliyun.ganos.dla.lindorm._
+import com.aliyun.ganos.dla.geotrellis._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -36,12 +36,12 @@ object Lindorm extends App{
   def additionalConf = new SparkConf(false)
 
   //读取图层catalog信息
-  val cat=spark.read.ganos.lindormRasterCatalog(URI.create(inputUri))
+  val cat=spark.read.ganos.geotrellisCatalog(URI.create(inputUri))
   cat.show
 
   //加载图层
   val layer = cat.where($"layer.id.zoom" === "2").select(raster_layer).collect
-  val lots = layer.map(spark.read.ganos.lindormRaster.loadLayer).map(_.toDF).reduce(_ union _)
+  val lots = layer.map(spark.read.ganos.geotrellis.loadLayer).map(_.toDF).reduce(_ union _)
   lots.show
 
   //抵用st_rgb_composite生成RGB 瓦片
