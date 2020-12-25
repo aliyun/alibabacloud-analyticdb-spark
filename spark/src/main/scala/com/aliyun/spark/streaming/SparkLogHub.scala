@@ -3,6 +3,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.aliyun.logservice.LoghubUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
+//说明 默认配置下，Receiver模式在异常情况下可能导致数据丢失。为了避免此类情况发生，建议开启Write-Ahead Logs开关（Spark 1.2以上版本支持）
 object SparkLogHub {
   def main(args: Array[String]): Unit = {
     if (args.length < 8) {

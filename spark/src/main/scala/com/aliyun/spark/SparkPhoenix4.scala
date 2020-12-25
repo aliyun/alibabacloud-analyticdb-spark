@@ -3,8 +3,10 @@ package com.aliyun.spark
 import org.apache.spark.sql.SparkSession
 
 /**
- * 本实例适用于Phoenix 4.x版本
+ * 本实例适用于Phoenix 4.x版本 对应hbase1.x
+ * 编译时打开phoenix profile的开关 mvn clean package -Pphoenix4
  */
+
 object SparkPhoenix4 {
   def main(args: Array[String]): Unit = {
     //HBase集群的ZK链接地址。
