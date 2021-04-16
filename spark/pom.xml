@@ -19,7 +19,6 @@
     </properties>
     <dependencies>
         <!--for local debugging in idea, you may need comment out the dependencies' <scope>provided</scope> -->
-
         <!--Spark sql-->
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -62,11 +61,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--Spark oss connector-->
+        <!-- OSS        -->
         <dependency>
-            <groupId>com.aliyun.dla.spark</groupId>
-            <artifactId>oss-connector</artifactId>
-            <version>1.0</version>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.10.2</version>
         </dependency>
         <!--GetConfig Util Dependency-->
         <dependency>
@@ -110,6 +109,12 @@
             <artifactId>emr-datahub_2.11</artifactId>
             <version>${emr.connector.version}</version>
         </dependency>
+        <!--Cassandra        -->
+        <dependency>
+            <groupId>com.datastax.spark</groupId>
+            <artifactId>spark-cassandra-connector_2.11</artifactId>
+            <version>2.4.2</version>
+        </dependency>
 
         <!--  java sdk demo -->
         <dependency>
@@ -129,6 +134,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -169,7 +175,6 @@
                                     <include>*:*</include>
                                 </includes>
                                 <excludes>
-                                    <exclude>org.apache.hadoop:*</exclude>
                                     <exclude>io.netty:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
                                 </excludes>

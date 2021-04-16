@@ -18,8 +18,6 @@ object SparkHbase {
       .appName("scala spark on HBase test")
       .getOrCreate()
 
-    import sparkSession.implicits._
-
     //如果存在的话就删除表
     sparkSession.sql(s"drop table if exists $sparkTableName")
 
@@ -36,6 +34,24 @@ object SparkHbase {
     println(s" the create sql cmd is: \n $createCmd")
     sparkSession.sql(createCmd)
     val querySql = "select * from " + sparkTableName + " limit 10"
-    sparkSession.sql(querySql).show
+    val queryDF = sparkSession.sql(querySql)
+    queryDF.show()
+
+
+    val catalog =
+      s"""
+        |{
+        |"table":{"namespace":"default", "name":"${hbaseTableName}"},
+        |"rowkey":"rowkey",
+        |"columns":{
+        |    "col0":{"cf":"rowkey", "col":"rowkey", "type":"string"},
+        |    "col1":{"cf":"cf", "col":"col1", "type":"String"}
+        |    }
+        |}
+        |""".stripMargin
+    queryDF.write.options(
+      Map("catalog" -> catalog, "newtable" -> "3","hbase.zookeeper.quorum"->zkAddress)) // create 3 regions
+      .format("org.apache.hadoop.hbase.spark")
+      .save()
   }
 }
