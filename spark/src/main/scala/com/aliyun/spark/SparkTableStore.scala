@@ -1,7 +1,8 @@
 package com.aliyun.spark
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.{Row, SparkSession}
 
 import scala.collection.mutable
 //https://help.aliyun.com/document_detail/187100.html?spm=a2c4g.11186623.2.26.25336939JXk48g#topic-1962927
@@ -19,7 +20,7 @@ object SparkTableStore {
     val endpoint = args(2)
     val accessKeyId = args(3)
     val accessKeySecret = args(4)
-    //表结构
+    //表结构,您需要在tablestore中准备具有如下表结构的表
     val catalog =
       """
         |{
@@ -84,6 +85,15 @@ object SparkTableStore {
     val df = dfReader.load()
     //显示表内容
     df.show()
-  }
+    df.printSchema()
 
+    //写表
+    val schema = StructType.apply(Seq(StructField("id", StringType), StructField("company", StringType),StructField("age", IntegerType), StructField("name", StringType)))
+    val newData = spark.sparkContext.parallelize(Seq(("1","ant",10,"xxx"))).map(row => Row(row._1, row._2, row._3, row._4))
+    val newDataDF = spark.createDataFrame(newData, schema)
+    newDataDF.write.format("tablestore").options(options).save
+    val dfReader1 = spark.read.format("tablestore").options(options)
+    val df1 = dfReader1.load()
+    df1.show()
+  }
 }
