@@ -19,7 +19,7 @@
         <aliyun-java-sdk.version>3.7.1</aliyun-java-sdk.version>
         <hadoop.version>3.1.1</hadoop.version>
         <dla-datalake-format>1.0-SNAPSHOT</dla-datalake-format>
-        <mysql-connector.version>8.0.16</mysql-connector.version>
+        <mysql-connector.version>8.0.28</mysql-connector.version>
         <scala.version>2.11</scala.version>
         <dts.version>1.0-SNAPSHOT</dts.version>
     </properties>
